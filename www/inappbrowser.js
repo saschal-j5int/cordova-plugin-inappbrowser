@@ -30,7 +30,6 @@
     var channel = require('cordova/channel');
     var modulemapper = require('cordova/modulemapper');
     var urlutil = require('cordova/urlutil');
-    var _iab;
 
     function InAppBrowser () {
         this.channels = {
@@ -51,7 +50,6 @@
         },
         close: function (eventname) {
             exec(null, null, 'InAppBrowser', 'close', []);
-            _iab = null;
         },
         show: function (eventname) {
             exec(null, null, 'InAppBrowser', 'show', []);
@@ -99,21 +97,20 @@
         }
 
         strUrl = urlutil.makeAbsolute(strUrl);
-        if (!_iab)
-            _iab = new InAppBrowser();
+        var iab = new InAppBrowser();
 
         callbacks = callbacks || {};
         for (var callbackName in callbacks) {
-            _iab.addEventListener(callbackName, callbacks[callbackName]);
+            iab.addEventListener(callbackName, callbacks[callbackName]);
         }
 
         var cb = function (eventname) {
-            _iab._eventHandler(eventname);
+            iab._eventHandler(eventname);
         };
 
         strWindowFeatures = strWindowFeatures || '';
 
         exec(cb, cb, 'InAppBrowser', 'open', [strUrl, strWindowName, strWindowFeatures]);
-        return _iab;
+        return iab;
     };
 })();
